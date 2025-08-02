@@ -1,9 +1,9 @@
 import os
 import asyncio
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
-from qa_assistant import RAGAssistant
+from qa_assistant_ import AdmissionConsultant
 from dotenv import load_dotenv
 
 # Загрузка переменных окружения
@@ -28,9 +28,7 @@ class TelegramRAGBot:
     async def initialize_assistant(self):
         """Инициализация RAG ассистента"""
         print("🔄 Инициализация RAG ассистента...")
-        self.rag_assistant = RAGAssistant(
-            docs_folder="parsed_pages",
-            vector_db_path="vector_db"
+        self.rag_assistant = AdmissionConsultant(
         )
         print("✅ RAG ассистент готов")
     
