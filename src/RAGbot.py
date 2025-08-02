@@ -53,43 +53,31 @@ class TelegramRAGBot:
     
     async def handle_message(self, message: Message):
         """Обработка обычных сообщений с вопросами"""
-        # # Пропускаем команды
-        # if message.text.startswith('/'):
-        #     return
-            
         # Показываем статус "печатает..."
         await message.bot.send_chat_action(message.chat.id, "typing")
-        
+
         try:
             # Инициализация ассистента при первом запросе
             if not self.rag_assistant:
                 await self.initialize_assistant()
-            
+
             # Получаем ответ от RAG системы
             response = self.rag_assistant.ask(message.text)
-            
-            if "error" in response:
+
+            # Проверяем, не является ли ответ ошибкой
+            if isinstance(response, dict) and "error" in response:
                 await message.answer(f"⚠️ Ошибка: {response['error']}")
                 return
-            
-            # Форматируем ответ с помощью доступных функций
-            answer_text = "💡 Ответ:" + f"\n{response['answer']}"
-            sources_text = ""
-            
-            # if response["sources"]:
-            #     sources_text = hitalic("\n\n🔍 Источники информации:") + "\n"
-            #     for i, source in enumerate(response["sources"], 1):
-            #         source_name = source["source"]
-            #         content_preview = source["content"]
-            #         sources_text += f"{i}. {hbold(source_name)}\n{content_preview}\n"
-            
+
+            # Форматируем ответ
+            answer_text = f"💡 Ответ:\n{response}"
+
             # Отправляем ответ
-            full_response = f"{answer_text}{sources_text}"
-            await message.answer(full_response)
-            
+            await message.answer(answer_text)
+
         except Exception as e:
             await message.answer(f"⚠️ Произошла ошибка: {str(e)}")
-    
+        
     async def start(self):
         """Запуск бота"""
         await self.dp.start_polling(self.bot)
